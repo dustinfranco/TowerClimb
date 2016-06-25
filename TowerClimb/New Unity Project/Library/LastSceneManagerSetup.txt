@@ -1,0 +1,4 @@
+sceneSetups:
+- path: C:/Users/theboss/Desktop/SliceOfLife3d - Copy/SliceOfLife3d/Assets/SceneA.unity
+  isLoaded: 1
+  isActive: 1
