@@ -45,6 +45,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CreateRing.cs" />
+     <Compile Include="Assets\CylinderScript.cs" />
      <Compile Include="Assets\PlayField.cs" />
      <Compile Include="Assets\Units\UnitScript.cs" />
      <Compile Include="Assets\Units\movementLUT.cs" />
