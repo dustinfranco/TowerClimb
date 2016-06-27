@@ -14,13 +14,17 @@ public class PlayField : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+		Vector3[] ring = (Vector3[]) GetComponent<CreateRing> ().createRingArrayList (10);
+		Quaternion[] ringAngles = GetComponent<CreateRing> ().createRingAngleArrayList (10);
+
 		//generate the playfield
 		activeTiles = new GameObject[10, 10];
 		int activeX = 10;
 		int activeY = 10;
 		for (int x = 0; x < activeX; x++) {
 			for (int y = 0; y < activeY; y++) {
-				activeTiles [x, y] = (GameObject)Instantiate (tile, new Vector3 (x, 0f, y), Quaternion.Euler (0f, 0f, 0f));
+				activeTiles [x, y] = (GameObject)Instantiate (tile, ring[x] + new Vector3(0f,(float) y, 0f), ringAngles[x]);
 				activeTiles [x, y].transform.SetParent (transform);
 			}
 		}
