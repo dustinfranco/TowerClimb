@@ -11,6 +11,7 @@ public class PlayField : MonoBehaviour {
 	public GameObject currentlySelectedUnit;
 	private int currentlySelectedNumber = 0;
 	private bool currentlySelectingPlayerTeam = false;
+	public float lerpIteration = 0.1f;
 
 	// Use this for initialization
 	void Start () {
@@ -25,28 +26,20 @@ public class PlayField : MonoBehaviour {
 		for (int x = 0; x < activeX; x++) {
 			for (int y = 0; y < activeY; y++) {
 				activeTiles [x, y] = (GameObject)Instantiate (tile, ring[x] + new Vector3(0f,(float) y, 0f), ringAngles[x]);
+				activeTiles [x, y].name = x.ToString () + "," + y.ToString();
 				activeTiles [x, y].transform.SetParent (transform);
 			}
 		}
 		activePlayerUnits = new GameObject[6];
 		activeEnemyUnits = new GameObject[6];
-		activePlayerUnits [0] = (newUnit (unit, 0, 1));
-		activeEnemyUnits [0] = (newUnit (unit, 0, 8));
-
-		activePlayerUnits [1] = (newUnit (unit, 0, 2));
-		activeEnemyUnits [1] = (newUnit (unit, 0, 9));
-
-		activePlayerUnits [2] = (newUnit (unit, 1, 1));
-		activeEnemyUnits [2] = (newUnit (unit, 1, 8));
-
-		activePlayerUnits [3] = (newUnit (unit, 1, 2));
-		activeEnemyUnits [3] = (newUnit (unit, 2, 8));
-
-		activePlayerUnits [4] = (newUnit (unit, 2, 2));
-		activeEnemyUnits [4] = (newUnit (unit, 2, 9));
-
-		activePlayerUnits [5] = (newUnit (unit, 2, 1));
-		activeEnemyUnits [5] = (newUnit (unit, 3, 8));
+		activePlayerUnits [0] = newUnit (unit, activeTiles[0,0]);
+		activePlayerUnits [0].name = "0,0";
+		activePlayerUnits [1] = newUnit (unit, activeTiles[6,1]);
+		activePlayerUnits [1].name = "6,1";
+		activePlayerUnits [2] = newUnit (unit, activeTiles[3,1]);
+		activePlayerUnits [2].name = "3,1";
+		activeEnemyUnits [0] = newUnit (unit, activeTiles[5,1]);
+		activeEnemyUnits [0].name = "5,1";
 		/*
 		for (int i = 0; i < 4; i++){
 			activePlayerUnits[i] = (GameObject) Instantiate (unit, new Vector3 (i, 0f, 0f), Quaternion.Euler(0f,0f,0f));
@@ -54,12 +47,16 @@ public class PlayField : MonoBehaviour {
 		}
 		*/
 		currentlySelectedUnit = fetchUnitGameObject (true, 0);
-		Debug.Log (currentlySelectedUnit);
 		CameraControl.GetComponent<cameraScript>().initCamera();
 	}
 
-	GameObject newUnit(GameObject typeOfUnit, int xPosition, int yPosition){
-		GameObject freshUnit = (GameObject) Instantiate (typeOfUnit, new Vector3 (xPosition, 0, yPosition), Quaternion.Euler(0f,0f,0f));
+	public float returnLerpIteration(){
+		return lerpIteration;
+	}
+
+	GameObject newUnit(GameObject typeOfUnit, GameObject spawnAtTile){
+		GameObject freshUnit = (GameObject) Instantiate (typeOfUnit, spawnAtTile.GetComponent<Transform>().position, Quaternion.Euler(0f,spawnAtTile.GetComponent<Transform>().eulerAngles.y,0f));
+		freshUnit.transform.SetParent (transform);
 		return freshUnit;
 	}
 
@@ -72,7 +69,9 @@ public class PlayField : MonoBehaviour {
 		}
 		return newUnit;
 	}
-
+	public GameObject getSelectedUnit(){
+		return currentlySelectedUnit;
+	}
 	// Update is called once per frame
 	private bool frameFreeze = false;
 	void Update () {
