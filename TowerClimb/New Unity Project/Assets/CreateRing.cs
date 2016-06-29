@@ -10,7 +10,7 @@ public class CreateRing : MonoBehaviour {
 	private Transform boardHolder;
 	private Quaternion LastRotation;
 	private Quaternion NextRotation;
-	private float startTime = Time.time;
+	private float startTime = 0f;
 	private Transform ghostBoardHolder;
 	//private bool initialed = false;
 	/************************

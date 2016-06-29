@@ -1,10 +1,12 @@
 fileFormatVersion: 2
 guid: e390c6e1f52b04a438c4f739d7531058
-timeCreated: 1466568590
+timeCreated: 1467174859
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - spookyGhostObjectUnreal: {fileID: 134886, guid: b5fabb32f3a5b7e439f8a91956859b19,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
