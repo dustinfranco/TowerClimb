@@ -1,0 +1,122 @@
+System.IO.StreamReader
+
+   PSCORE: 10
+   ESCORE: 15
+   UNITS: 
+      UNIT AT: 0_0
+         0_0
+         PLAYER OWNED: True
+         MOVES:
+            1_1
+            19_1
+            0_1
+      UNIT AT: 0_1
+         0_1
+         PLAYER OWNED: True
+         MOVES:
+            1_1
+            1_2
+            19_1
+            19_2
+            0_2
+      UNIT AT: 1_9
+         1_9
+         PLAYER OWNED: False
+         MOVES:
+            19_9
+            2_9
+            0_9
+            3_9
+            18_9
+            1_8
+            4_9
+      UNIT AT: 1_8
+         1_8
+         PLAYER OWNED: False
+         MOVES:
+            19_9
+            2_9
+            0_8
+            3_8
+            3_9
+            0_9
+            2_8
+            19_8
+      UNIT AT: 1_0
+         1_0
+         PLAYER OWNED: True
+         MOVES:
+            1_1
+      UNIT AT: 1_1
+         1_1
+         PLAYER OWNED: True
+         MOVES:
+            19_1
+            19_2
+            3_1
+            2_1
+            2_2
+            0_1
+            0_2
+            3_2
+      UNIT AT: 1_2
+         1_2
+         PLAYER OWNED: True
+         MOVES:
+            3_4
+            1_4
+            19_4
+      UNIT AT: 0_2
+         0_2
+         PLAYER OWNED: True
+         MOVES:
+            18_2
+            1_2
+            17_2
+            19_2
+            2_2
+            0_1
+            3_2
+            0_3
+      UNIT AT: 1_7
+         1_7
+         PLAYER OWNED: False
+         MOVES:
+            19_9
+            3_5
+            3_9
+            19_5
+            1_9
+      UNIT AT: 0_7
+         0_7
+         PLAYER OWNED: False
+         MOVES:
+            0_6
+            3_7
+            0_8
+            18_7
+            1_7
+            17_7
+            19_7
+            2_7
+      UNIT AT: 0_8
+         0_8
+         PLAYER OWNED: False
+         MOVES:
+            19_9
+            0_7
+            0_9
+            1_7
+            1_8
+            1_9
+            19_7
+            19_8
+      UNIT AT: 0_9
+         0_9
+         PLAYER OWNED: False
+         MOVES:
+            19_9
+            0_8
+            1_8
+            1_9
+            19_8
