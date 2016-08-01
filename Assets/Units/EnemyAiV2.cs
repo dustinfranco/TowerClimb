@@ -24,7 +24,7 @@ public class EnemyAiV2 : MonoBehaviour {
 		}
 	}
 	Hashtable decideMove(int initialPlyNumber){
-		board initialField = flattenedInitialField (2);
+		board initialField = flattenedInitialField (initialPlyNumber);
 		//initialField.printUnitInfo ();
 		//initialField.printBoardInfo ();
 		return new Hashtable();
@@ -107,7 +107,7 @@ public class EnemyAiV2 : MonoBehaviour {
 		public Hashtable OS = new Hashtable();
 		public string sequence = "";
 
-		public board(int inHeight, int inBottom, int inCircumference, Hashtable inOS, int plyNumber, string applyUnitString, string applyLocationString, string currentName){
+		public board(int inHeight, int inBottom, int inCircumference, Hashtable inOS, int plyNumber, string applyUnitString, string applyLocationString, string currentName, bool playerTurn){
 			activeHigh = inHeight;
 			activeLow = inBottom;
 			sequence = currentName;
@@ -116,24 +116,14 @@ public class EnemyAiV2 : MonoBehaviour {
 			if(applyUnitString != "" && applyLocationString != ""){
 				applyMove(applyUnitString, applyLocationString);
 			}
-			///Debug.Log("IS TARGET A KEY? " + OS.ContainsKey(applyUnitString));
-			///Debug.Log("IS ORIGINAL A KEY? " + OS.ContainsKey(applyLocationString));
 			popMoves();
 			calculateCurrentScores();
 			if(plyNumber > 0){
 				int plyNumberMinusMinus = plyNumber - 1;
-				popMoveBoards (plyNumberMinusMinus);
-			} else {
-				//printAllUnitsOneLine();
-				//printBoardInfo();
-				//printUnitInfo();
-				///Debug.Log("\n");
-				///Debug.Log("\n");
-				///Debug.Log("\n");
-				///Debug.Log("\n");
-				///Debug.Log("\n");
+				popMoveBoards (plyNumberMinusMinus, playerTurn);
 			}
-			printSingleBoard(0);
+			//This logs all moves 
+			printSingleBoard(plyNumber);
 		}
 
 		public void applyMove(string currentUnitString, string targetLocationString){
@@ -144,43 +134,30 @@ public class EnemyAiV2 : MonoBehaviour {
 				clonedOS.Remove(targetLocationString);
 			}
 			unit currentUnit = (unit) clonedOS[currentUnitString];
-
-			//THIS IS WHAT IT USED TO BE
-			//string[] xy = currentUnitStringClone.Split('_');
 			string[] xy = targetLocationString.Split('_');
-
 			int newX = int.Parse((string) xy[0]);
 			int newY = int.Parse((string) xy[1]);
-			/*
-			Debug.Log (targetLocationString);
-			Debug.Log (newX);
-			Debug.Log (newY);
-			Debug.Log (currentUnit.playerOwned);
-			Debug.Log (currentUnit.classA);
-			Debug.Log (currentUnit.classB);
-			Debug.Log (currentUnitString);
-			Debug.Log(targetLocationString);
-			Debug.Log (clonedOS[currentUnitString]);
-			Debug.Log (currentUnit);
-			Debug.Log (new unit (newX, newY, currentUnit.playerOwned, currentUnit.classA, currentUnit.classB));
-			*/
 			clonedOS.Add (targetLocationString, new unit (newX, newY, currentUnit.playerOwned, currentUnit.classA, currentUnit.classB));
 			clonedOS.Remove(currentUnitString);
 			OS = new Hashtable ((Hashtable) clonedOS.Clone ());
 		}
 
 		//this should fill the moves boards and all boards in those unitl ply is 0
-		void popMoveBoards(int plyNumber){
+		//this should no longer be 
+		void popMoveBoards(int plyNumber, bool playerPly){
 			Hashtable clonedOS = (Hashtable)OS.Clone ();
 			foreach (string unitKey in clonedOS.Keys) {
 				unit currentUnit = (unit) clonedOS[unitKey];
-				Hashtable currentUnitMovesClone = (Hashtable) currentUnit.moves.Clone();
-				//for each move in unit
-				foreach (string moveKey in currentUnit.moves.Keys) {
-					//move is to a location with a unit
-					currentUnitMovesClone[moveKey] = new board(activeHigh,activeLow,Circumference,(Hashtable) OS.Clone(), plyNumber, (string) unitKey.Clone(), (string)moveKey.Clone(), sequence);
+				//if the unit is on the team currently making the move
+				if (currentUnit.playerOwned == playerPly) {
+					Hashtable currentUnitMovesClone = (Hashtable)currentUnit.moves.Clone ();
+					//for each move in unit
+					foreach (string moveKey in currentUnit.moves.Keys) {
+						//move is to a location with a unit
+						currentUnitMovesClone [moveKey] = new board (activeHigh, activeLow, Circumference, (Hashtable)OS.Clone (), plyNumber, (string)unitKey.Clone (), (string)moveKey.Clone (), sequence, !playerPly);
+						currentUnit.moves = (Hashtable)currentUnitMovesClone;
+					}
 				}
-				currentUnit.moves = (Hashtable)currentUnitMovesClone;
 			}
 			OS = clonedOS;
 		}
@@ -215,7 +192,7 @@ public class EnemyAiV2 : MonoBehaviour {
 				//for each move in unit
 				foreach (string moveKey in currentUnit.moves.Keys) {
 					//move is to a location with a unit
-					currentUnitMovesClone[moveKey] = new board(activeHigh,activeLow,Circumference,(Hashtable) OS.Clone(), plyNumber, (string) unitKey.Clone(), (string)moveKey.Clone(), sequence);
+					currentUnitMovesClone[moveKey] = new board(activeHigh,activeLow,Circumference,(Hashtable) OS.Clone(), plyNumber, (string) unitKey.Clone(), (string)moveKey.Clone(), sequence, true);
 				}
 				currentUnit.moves = (Hashtable)currentUnitMovesClone;
 			}
@@ -268,52 +245,54 @@ public class EnemyAiV2 : MonoBehaviour {
 		//DEBUG STUFF BOARD
 
 		public void printSingleBoard(int layerIn){
-			int layer = 0 + layerIn;
-			string printString = "";
-			string layerAdd = "   ";
-			string LA = "\n";
-			for (int i = 0; i < layer; i++){
-				LA += layerAdd;
-			}
-			layer += 1;
-			printString += LA + sequence;
-			printString += LA + layerAdd + "PSCORE: " + PScore;
-			printString += LA + layerAdd + "ESCORE: " + EScore;
-			printString += LA + layerAdd + "UNITS: ";
-			foreach (string key in OS.Keys) {
+			if(layerIn == 0){
+				int layer = 0 + layerIn;
+				string printString = "";
+				string layerAdd = "   ";
+				string LA = "\n";
+				for (int i = 0; i < layer; i++){
+					LA += layerAdd;
+				}
 				layer += 1;
-				unit currentUnit = (unit)OS [key];
-				printString += LA + layerAdd + layerAdd + "UNIT AT: " + key;
-				layer += 1;
-				printString += LA + layerAdd + layerAdd + layerAdd + key;
-				printString += LA + layerAdd + layerAdd + layerAdd + "PLAYER OWNED: " + currentUnit.playerOwned;
-				printString += LA + layerAdd + layerAdd + layerAdd + "MOVES:";
-				foreach (string moveKey in currentUnit.moves.Keys) {
+				printString += LA + sequence;
+				printString += LA + layerAdd + "PSCORE: " + PScore;
+				printString += LA + layerAdd + "ESCORE: " + EScore;
+				printString += LA + layerAdd + "UNITS: ";
+				foreach (string key in OS.Keys) {
 					layer += 1;
-					printString += LA + layerAdd + layerAdd + layerAdd + layerAdd + moveKey;
-					//printString += LA + layerAdd + layerAdd + layerAdd + layerAdd + layerAdd + "PSCORE: " + ((board) currentUnit.moves [moveKey]).PScore.ToString();
-					//printString += LA + layerAdd + layerAdd + layerAdd + layerAdd + layerAdd + "ESCORE: " + ((board)currentUnit.moves [moveKey]).EScore.ToString ();
+					unit currentUnit = (unit)OS [key];
+					printString += LA + layerAdd + layerAdd + "UNIT AT: " + key;
+					layer += 1;
+					printString += LA + layerAdd + layerAdd + layerAdd + key;
+					printString += LA + layerAdd + layerAdd + layerAdd + "PLAYER OWNED: " + currentUnit.playerOwned;
+					printString += LA + layerAdd + layerAdd + layerAdd + "MOVES:";
+					foreach (string moveKey in currentUnit.moves.Keys) {
+						layer += 1;
+						printString += LA + layerAdd + layerAdd + layerAdd + layerAdd + moveKey;
+						//printString += LA + layerAdd + layerAdd + layerAdd + layerAdd + layerAdd + "PSCORE: " + ((board) currentUnit.moves [moveKey]).PScore.ToString();
+						//printString += LA + layerAdd + layerAdd + layerAdd + layerAdd + layerAdd + "ESCORE: " + ((board)currentUnit.moves [moveKey]).EScore.ToString ();
+
+					}
 
 				}
-
+				FileStream createFile = new FileStream ("Logs/" + sequence + ".txt", FileMode.OpenOrCreate, FileAccess.Write);
+				createFile.WriteByte (1);
+				createFile.Close ();
+				StreamReader reader = new StreamReader ("Logs/" + sequence + ".txt");
+				string textSoFar = "";
+				textSoFar += reader.ToString ();
+				reader.Close ();
+				//string FileName = "Logs/" + sequence + ".txt"; // This contains the name of the file. Don't add the ".txt"
+				// Assign in inspector
+				//TextAsset asset; // Gets assigned through code. Reads the file.
+				//StreamWriter writer; // This is the writer that writes to the file
+				StreamWriter writer = new StreamWriter("Logs/" + sequence + ".txt"); // Does this work?
+				writer.WriteLine(textSoFar + printString);
+				writer.Flush ();
+				writer.Close ();
+				//Debug.Log (printString);
+				//System.IO.File.WriteAllText("Logs/UnityLog.txt", printString);
 			}
-			FileStream createFile = new FileStream ("Logs/" + sequence + ".txt", FileMode.OpenOrCreate, FileAccess.Write);
-			createFile.WriteByte (1);
-			createFile.Close ();
-			StreamReader reader = new StreamReader ("Logs/" + sequence + ".txt");
-			string textSoFar = "";
-			textSoFar += reader.ToString ();
-			reader.Close ();
-			//string FileName = "Logs/" + sequence + ".txt"; // This contains the name of the file. Don't add the ".txt"
-			// Assign in inspector
-			//TextAsset asset; // Gets assigned through code. Reads the file.
-			//StreamWriter writer; // This is the writer that writes to the file
-			StreamWriter writer = new StreamWriter("Logs/" + sequence + ".txt"); // Does this work?
-			writer.WriteLine(textSoFar + printString);
-			writer.Flush ();
-			writer.Close ();
-			Debug.Log (printString);
-			//System.IO.File.WriteAllText("Logs/UnityLog.txt", printString);
 		}
 
 		public void printBoardInfo(){
@@ -347,31 +326,6 @@ public class EnemyAiV2 : MonoBehaviour {
 			}
 		}
 	}
-
-	//Board
-		//int PScore
-		//int EScore
-		//int Height
-		//int Circumference
-		//int Bottom
-		//Hashtable OS
-			//key "x_y"
-				//team
-				//classA
-				//classB
-				//moves
-					//"x_y"
-						//int PScore
-						//int EScore
-						//Hashtable boardOut
-
-
-
-
-
-
-
-
 
 	//PRETTY MUCH FINALIZED BELOW HERE:
 
@@ -416,24 +370,13 @@ public class EnemyAiV2 : MonoBehaviour {
 			OS [tempX.ToString () + "_" + tempY.ToString ()] = currentUnitAsUnit;
 		}
 
-		board InitialBoard = new board(activeHigh, activeLow, circumference, (Hashtable) OS.Clone(), initialPlyNumber, "","","");
+		board InitialBoard = new board(activeHigh, activeLow, circumference, (Hashtable) OS.Clone(), initialPlyNumber, "","","", true);
 		return InitialBoard;
 	}
 
 	private Hashtable surveyField (){
 		Hashtable returnHash = GetComponent<PlayField> ().GetBoardInformation ();
-		if (false) {
-			Debug.Log (returnHash ["playerUnits"]);
-			Debug.Log (returnHash ["enemyUnits"]);
-			Debug.Log (returnHash ["cylinderCircumference"]);
-			Debug.Log (returnHash ["activeFieldHigh"]);
-			Debug.Log (returnHash ["activeFieldLow"]);
-			Debug.Log (returnHash ["occupiedSpaces"]);
-			Hashtable occupado = (Hashtable) returnHash ["occupiedSpaces"];
-			foreach (DictionaryEntry unit in occupado) {
-				Debug.Log ((string) unit.Key + ((GameObject)unit.Value).name);
-			}
-		}
 		return returnHash;
 	}
+
 }
