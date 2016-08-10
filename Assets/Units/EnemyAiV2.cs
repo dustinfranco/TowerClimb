@@ -42,7 +42,7 @@ public class EnemyAiV2 : MonoBehaviour {
 		public string xys = "";
 		public bool playerOwned = true;
 		public string classA = "nothing";
-		public string classB = "nothing";
+		public string classB = "nothin1g";
 		public Hashtable moves = new Hashtable ();
 
 		public unit(int inX, int inY, bool inTeam, string inClassA, string inClassB) {
@@ -378,5 +378,6 @@ public class EnemyAiV2 : MonoBehaviour {
 		Hashtable returnHash = GetComponent<PlayField> ().GetBoardInformation ();
 		return returnHash;
 	}
+		
 
 }
