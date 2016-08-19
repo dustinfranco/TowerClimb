@@ -176,6 +176,15 @@ public class PlayField : MonoBehaviour {
 		return boardInfo;
 	}
 
+	private void takeEnemyTurn(){
+		Hashtable moveDecision = (Hashtable) GetComponent<EnemyAiV2> ().decideMove (3);
+		//GameObject currentTile = activeTiles [(int)currentMovement.x, (int)currentMovement.y];
+		
+	}
+
+	private void moveUnitToTile(unitCords, moveCords) {
+		
+	}
 
 	/// 
 	/// Update
@@ -261,7 +270,7 @@ public class PlayField : MonoBehaviour {
 			currentlySelectedUnit.GetComponent<UnitScript> ().setNewTransform (nextTileTransform);
 		} else if (Input.GetKey ("e")) {
 			if (!frameFreeze) {
-				ArrayList currentlySelectedMovements = currentlySelectedUnit.GetComponent<UnitScript> ().returnValidMovements ();
+				ArrayList churrentlySelectedMovements = currentlySelectedUnit.GetComponent<UnitScript> ().returnValidMovements ();
 				toggleMovementTiles (true);
 				frameFreeze = true;
 			}
@@ -269,7 +278,9 @@ public class PlayField : MonoBehaviour {
 		} else if (Input.GetKey ("r")) {
 			if (!frameFreeze) {
 				frameFreeze = true;
-				GetComponent<EnemyAiV2> ().test (false);
+				Hashtable decidedMove = GetComponent<EnemyAiV2> ().test (false);
+				Debug.Log (decidedMove["move"]);
+				Debug.Log (decidedMove ["score"]);
 			}
 		} else if (Input.GetMouseButtonDown (0)) {
 			if (Input.GetMouseButtonDown(0))

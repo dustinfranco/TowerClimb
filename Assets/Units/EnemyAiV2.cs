@@ -6,28 +6,56 @@ public class EnemyAiV2 : MonoBehaviour {
 	private bool debug = false;
 
 	public int movesCalculated = 0;
+	//this is all from the point of view of the enemy
 	public int defendScore = 1000;
 	public int attackScore = 1;
 	public int safeScore = 100;
 	public int threatScore = 10;
 
-	public static movementLUT other = new movementLUT(); 
+	public static movementLUT aimoveLUT = new movementLUT(); 
 	public int plyPlus = 0;
 
-	public void test(bool debug){
-		plyPlus = plyPlus + 1;
-		Debug.Log ("test " + plyPlus.ToString());
-		decideMove (plyPlus);
-		Debug.Log ("test complete");
-		if (debug) {
+	public Hashtable test(bool debug){
+		Hashtable returnMove = decideMove (3);
+		return returnMove;
 
-		}
 	}
-	Hashtable decideMove(int initialPlyNumber){
+
+	//could be changed to a hashtable later?
+	public Hashtable decideMove(int initialPlyNumber){
 		board initialField = flattenedInitialField (initialPlyNumber);
+
+		//start here
+		//object b = t["key"];
+		//Type typeB = b.GetType();
+
+		// If ID is a property
+		//object value = b.GetType().GetProperty("PScore").GetValue(b, null);
+		//end here
+
+		Hashtable returnMove = new Hashtable ();
+		returnMove.Add("score", -1000000);
+		//returnMove.Add ("unit", "");
+		returnMove.Add("move", "");
+		foreach (string unitName in initialField.OS.Keys) {
+			unit currentUnit = (unit)initialField.OS [unitName];
+			foreach (string moveKey in currentUnit.moves.Keys) {
+				Hashtable movesHash = (Hashtable) currentUnit.moves;
+				if (movesHash [moveKey].GetType () == "s".GetType ()) {
+					Debug.Log ("String");
+				} else {
+					board currentMoveBoard = ((board)movesHash [moveKey]);
+					if (currentMoveBoard.PScore > (int)returnMove["score"]) {
+						returnMove["score"] = (int)currentMoveBoard.PScore;
+						returnMove ["move"] = (string)currentMoveBoard.sequence;
+					}
+					Debug.Log(((board) movesHash [moveKey]).PScore);
+				}
+			}
+		}
 		//initialField.printUnitInfo ();
 		//initialField.printBoardInfo ();
-		return new Hashtable();
+		return returnMove;
 	}
 
 
@@ -59,7 +87,7 @@ public class EnemyAiV2 : MonoBehaviour {
 			///Debug.Log("populateMoves y : " + y.ToString());
 			///Debug.Log("populateMoves xys : " + xys);
 				
-			moves = (Hashtable) other.determineFlatMoves(x,y,classA,classB);
+			moves = (Hashtable) aimoveLUT.determineFlatMoves(x,y,classA,classB);
 		}
 
 		public unit Clone(){
@@ -70,7 +98,6 @@ public class EnemyAiV2 : MonoBehaviour {
 		public void clearMoves(){
 			moves = new Hashtable ();
 		}
-
 		//DEBUG STUFF UNIT
 
 		public void printMoves(){
@@ -89,7 +116,6 @@ public class EnemyAiV2 : MonoBehaviour {
 				}
 			}
 		}
-
 	}
 
 	///
@@ -197,6 +223,10 @@ public class EnemyAiV2 : MonoBehaviour {
 				currentUnit.moves = (Hashtable)currentUnitMovesClone;
 			}
 			OS = clonedOS;
+		}
+
+		public int getScore(){
+			return PScore;
 		}
 
 		public void calculateCurrentScores(){
