@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 public class PlayField : MonoBehaviour {
 	public GameObject tile;
@@ -176,15 +177,76 @@ public class PlayField : MonoBehaviour {
 		return boardInfo;
 	}
 
+	private void printHashTable(Hashtable inputHash){
+		foreach(string key in inputHash.Keys){
+			Debug.Log (key + " " + inputHash [key]);
+		}
+	}
+
 	private void takeEnemyTurn(){
 		Hashtable moveDecision = (Hashtable) GetComponent<EnemyAiV2> ().decideMove (3);
 		//GameObject currentTile = activeTiles [(int)currentMovement.x, (int)currentMovement.y];
-		
+		printHashTable(moveDecision);
+		makeMove ((string) moveDecision["move"]);
 	}
 
-	private void moveUnitToTile(unitCords, moveCords) {
-		
+	private void makeMove (string movementIn){
+		string[] splitArray = Regex.Split(movementIn, "-");
+		Debug.Log ("1");
+		Debug.Log (splitArray [0]);
+		Debug.Log (splitArray [1]);
+		string[] unitLocStringArray = Regex.Split (splitArray [0], "_");
+		string[] movementLocStringArray = Regex.Split (splitArray [1], "_");
+
+		//TODO: DELETE THIS WHEN YOU FIX ENEMYAI ~
+		int indexA = movementLocStringArray [1].IndexOf('~');
+		movementLocStringArray [1] = movementLocStringArray [1].Remove (indexA);
+
+
+		//Debug.Log ("LOGGING SPLIT STRINGS!");
+		//Debug.Log (unitLocStringArray [0]);
+		//Debug.Log (unitLocStringArray [1]);
+		//Debug.Log (movementLocStringArray [0]);
+		//Debug.Log (movementLocStringArray [1]);
+
+		int unitLocX = int.Parse(unitLocStringArray [0]);
+		int unitLocY = int.Parse(unitLocStringArray [1]);
+		int movementLocX = int.Parse(movementLocStringArray [0]);
+		int movementLocY = int.Parse(movementLocStringArray [1]);
+
+		//TODO: make this more effecient
+		for (int i = 0; i < activeEnemyUnits.Count; i++) {
+			GameObject unitInspect = (GameObject)activeEnemyUnits [i];
+			int occupiedX = unitInspect.GetComponent<UnitScript> ().boardLocationX;
+			int occupiedY = unitInspect.GetComponent<UnitScript> ().boardLocationY;
+			if (occupiedX == unitLocX && occupiedY == unitLocY) {
+				currentlySelectedUnit = (GameObject) activeEnemyUnits [i];
+			}
+		}
+
+		GameObject tileGameObject = (GameObject)activeTiles [movementLocX, movementLocY];
+		Debug.Log ("currently Selected unit" + currentlySelectedUnit.name);
+		Debug.Log ("move to tile" + tileGameObject.name);
+
+		GameObject objectOnTile = tileGameObject.GetComponent<tileScript> ().objectOnTile;
+		if (objectOnTile != null) {
+			if (objectOnTile.GetComponent<UnitScript> ().playerOwned != currentlySelectedUnit.GetComponent<UnitScript> ().playerOwned) {
+				toggleMovementTiles (false);
+				moveUnit (tileGameObject);
+				toggleMovementTiles (true);
+				objectOnTile.GetComponent<UnitScript> ().killUnit ();
+			}
+		} else {
+			toggleMovementTiles (false);
+			moveUnit (tileGameObject);
+			toggleMovementTiles (true);
+		}
+ 
 	}
+
+	//private void moveUnitToTile(unitCords, moveCords) {
+		
+	//}
 
 	/// 
 	/// Update
@@ -196,7 +258,7 @@ public class PlayField : MonoBehaviour {
 	void Update () {
 		if (Time.deltaTime > 0.1f) {
 
-			Debug.Log (Time.deltaTime);
+			Debug.Log ("especially long frame: " + Time.deltaTime);
 		}
 		if (firstUpdate) {
 			ArrayList currentlySelectedMovements = currentlySelectedUnit.GetComponent<UnitScript> ().returnValidMovements ();
@@ -278,9 +340,10 @@ public class PlayField : MonoBehaviour {
 		} else if (Input.GetKey ("r")) {
 			if (!frameFreeze) {
 				frameFreeze = true;
-				Hashtable decidedMove = GetComponent<EnemyAiV2> ().test (false);
-				Debug.Log (decidedMove["move"]);
-				Debug.Log (decidedMove ["score"]);
+				//Hashtable decidedMove = GetComponent<EnemyAiV2> ().test (false);
+				//Debug.Log (decidedMove["move"]);
+				//Debug.Log (decidedMove ["score"]);
+				takeEnemyTurn();
 			}
 		} else if (Input.GetMouseButtonDown (0)) {
 			if (Input.GetMouseButtonDown(0))

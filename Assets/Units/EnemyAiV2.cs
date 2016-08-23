@@ -42,14 +42,14 @@ public class EnemyAiV2 : MonoBehaviour {
 			foreach (string moveKey in currentUnit.moves.Keys) {
 				Hashtable movesHash = (Hashtable) currentUnit.moves;
 				if (movesHash [moveKey].GetType () == "s".GetType ()) {
-					Debug.Log ("String");
+					//Debug.Log ("String");
 				} else {
 					board currentMoveBoard = ((board)movesHash [moveKey]);
 					if (currentMoveBoard.PScore > (int)returnMove["score"]) {
 						returnMove["score"] = (int)currentMoveBoard.PScore;
 						returnMove ["move"] = (string)currentMoveBoard.sequence;
 					}
-					Debug.Log(((board) movesHash [moveKey]).PScore);
+					//Debug.Log(((board) movesHash [moveKey]).PScore);
 				}
 			}
 		}
@@ -149,7 +149,7 @@ public class EnemyAiV2 : MonoBehaviour {
 				popMoveBoards (plyNumberMinusMinus, playerTurn);
 			}
 			//This logs all moves 
-			printSingleBoard(plyNumber);
+			//printSingleBoard(plyNumber);
 		}
 
 		public void applyMove(string currentUnitString, string targetLocationString){
@@ -400,7 +400,7 @@ public class EnemyAiV2 : MonoBehaviour {
 			OS [tempX.ToString () + "_" + tempY.ToString ()] = currentUnitAsUnit;
 		}
 
-		board InitialBoard = new board(activeHigh, activeLow, circumference, (Hashtable) OS.Clone(), initialPlyNumber, "","","", true);
+		board InitialBoard = new board(activeHigh, activeLow, circumference, (Hashtable) OS.Clone(), initialPlyNumber, "","","", false);
 		return InitialBoard;
 	}
 
