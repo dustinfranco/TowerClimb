@@ -128,6 +128,56 @@ public class EnemyAiV3 : MonoBehaviour {
 		return "";
 	}
 
+	private ArrayList returnAllPlayerMoves(ArrayList inputPU, Hashtable playerOS){
+		ArrayList allPlayerMoves = new ArrayList ();
+
+		//get units into hash table
+		for (int x = 0; x < inputPU.Count; x++) {
+			GameObject currentUnit = (GameObject)inputPU [x];
+			int tempX = currentUnit.GetComponent<UnitScript> ().boardLocationX;
+			int tempY = currentUnit.GetComponent<UnitScript> ().boardLocationY;
+			string tempClassA = currentUnit.GetComponent<UnitScript> ().getClass ("a");
+			string tempClassB = currentUnit.GetComponent<UnitScript> ().getClass ("b");
+			string playerName = tempX.ToString () + "_" + tempY.ToString ();
+
+			playerOS [playerName] = new Hashtable ();
+			Hashtable playerOSName = (Hashtable) playerOS [playerName];
+			playerOSName.Add ("class", tempClassA + "/" + tempClassB);
+			ArrayList moves = (ArrayList) aimoveLUT.determineFlatMovesArray(tempX, tempY, tempClassA, tempClassB);
+			playerOSName.Add ("moves", moves);
+			foreach (string movementName in moves) {
+				allPlayerMoves.Add (movementName);
+			}
+		}
+		return allPlayerMoves;
+	}
+
+	private ArrayList returnAllEnemyMoves(){
+		return new ArrayList();
+	}
+
+	private ArrayList trimInvalidMoves(){
+		return new ArrayList();
+	}
+
+	private ArrayList returnInvalidMoves(){
+		return new ArrayList();
+	}
+
+	private ArrayList returnKillMoves(){
+		return new ArrayList();
+	}
+
+
+	private int returnDangerOfMove(){
+		return 0;
+	}
+
+	private int returnThreatOfMove(){
+		return 0;
+	}
+
+
 	private string flattenInitialField(){
 		Hashtable initialSurvey = GetComponent<PlayField> ().GetBoardInformation ();
 		//Get lists together and cloned
@@ -148,23 +198,8 @@ public class EnemyAiV3 : MonoBehaviour {
 		ArrayList allPlayerMoves = new ArrayList ();
 
 		//get units into hash table
-		for (int x = 0; x < clonedPU.Count; x++) {
-			GameObject currentUnit = (GameObject)clonedPU [x];
-			int tempX = currentUnit.GetComponent<UnitScript> ().boardLocationX;
-			int tempY = currentUnit.GetComponent<UnitScript> ().boardLocationY;
-			string tempClassA = currentUnit.GetComponent<UnitScript> ().getClass ("a");
-			string tempClassB = currentUnit.GetComponent<UnitScript> ().getClass ("b");
-			string playerName = tempX.ToString () + "_" + tempY.ToString ();
 
-			playerOS [playerName] = new Hashtable ();
-			Hashtable playerOSName = (Hashtable) playerOS [playerName];
-			playerOSName.Add ("class", tempClassA + "/" + tempClassB);
-		 	ArrayList moves = (ArrayList) aimoveLUT.determineFlatMovesArray(tempX, tempY, tempClassA, tempClassB);
-			playerOSName.Add ("moves", moves);
-			foreach (string movementName in moves) {
-				allPlayerMoves.Add (movementName);
-			}
-		}
+		allPlayerMoves = returnAllPlayerMoves (clonedPU, playerOS);
 
 		ArrayList allEnemyMoves = new ArrayList ();
 
