@@ -176,8 +176,22 @@ public class EnemyAiV3 : MonoBehaviour {
 		return allEnemyMoves;
 	}
 
-	private ArrayList trimInvalidMoves(){
-		return new ArrayList();
+	private ArrayList trimInvalidMoves(ArrayList enemyMoves, Hashtable enemyOS){
+		ArrayList trimmedEnemyMoves = (ArrayList) enemyMoves.Clone();
+		int numberOfMoves = trimmedEnemyMoves.Count;
+		//Debug.Log ("Number of moves: " + numberOfMoves.ToString ());
+		for(int x = numberOfMoves - 1; x > -1; x--){
+			string movementName = (string) trimmedEnemyMoves [x];
+			bool isInEnemyOS = enemyOS.ContainsKey (movementName); 
+			if(isInEnemyOS){
+				//Debug.Log(movementName + " is a an invalid move");
+				trimmedEnemyMoves.RemoveAt (x);
+			}
+
+		}
+		numberOfMoves = trimmedEnemyMoves.Count;
+		//Debug.Log ("Number of moves after removing invalid: " + numberOfMoves.ToString ());
+		return trimmedEnemyMoves;
 	}
 
 	private ArrayList returnInvalidMoves(){
@@ -216,28 +230,16 @@ public class EnemyAiV3 : MonoBehaviour {
 		Hashtable movesList = new Hashtable ();
 
 		ArrayList allPlayerMoves = new ArrayList ();
+		ArrayList allEnemyMoves = new ArrayList ();
 
 		//get units into hash table
 
 		allPlayerMoves = returnAllPlayerMoves (clonedPU, playerOS);
-
-		ArrayList allEnemyMoves = new ArrayList ();
-
 		allEnemyMoves = returnAllEnemyMoves (clonedEU, enemyOS);
 
-		//finds invalid moves
+		//finds invalid enemy moves
+		allEnemyMoves = trimInvalidMoves(allEnemyMoves, enemyOS);
 		int numberOfMoves = allEnemyMoves.Count;
-		Debug.Log ("Number of moves: " + numberOfMoves.ToString ());
-		for(int x = numberOfMoves - 1; x > -1; x--){
-			string movementName = (string) allEnemyMoves [x];
-			bool isInEnemyOS = enemyOS.ContainsKey (movementName); 
-			if(isInEnemyOS){
-				Debug.Log(movementName + " is a an invalid move");
-				allEnemyMoves.RemoveAt (x);
-			}
-
-		}
-		numberOfMoves = allEnemyMoves.Count;
 		Debug.Log ("Number of moves after removing invalid: " + numberOfMoves.ToString ());
 
 		//finds kill moves
