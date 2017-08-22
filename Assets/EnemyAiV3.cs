@@ -152,8 +152,28 @@ public class EnemyAiV3 : MonoBehaviour {
 		return allPlayerMoves;
 	}
 
-	private ArrayList returnAllEnemyMoves(){
-		return new ArrayList();
+	private ArrayList returnAllEnemyMoves(ArrayList inputEU, Hashtable enemyOS){
+		ArrayList allEnemyMoves = new ArrayList ();
+		for (int y = 0; y < inputEU.Count; y++) {
+			GameObject currentUnit = (GameObject)inputEU [y];
+			int tempX = currentUnit.GetComponent<UnitScript> ().boardLocationX;
+			int tempY = currentUnit.GetComponent<UnitScript> ().boardLocationY;
+			string tempClassA = currentUnit.GetComponent<UnitScript> ().getClass ("a");
+			string tempClassB = currentUnit.GetComponent<UnitScript> ().getClass ("b");
+			string enemyName = tempX.ToString () + "_" + tempY.ToString ();
+
+			enemyOS [enemyName] = new Hashtable ();
+			Hashtable enemyOSName = (Hashtable) enemyOS [enemyName];
+			enemyOSName.Add ("class", tempClassA + "/" + tempClassB);
+			//this returns all the moves available for this unit
+			ArrayList moves = (ArrayList) aimoveLUT.determineFlatMovesArray(tempX, tempY, tempClassA, tempClassB);
+			//I don't think that enemy needs to have moves unique to each unit? but why not?
+			enemyOSName.Add ("moves", moves);
+			foreach (string movementName in moves) {
+				allEnemyMoves.Add (movementName);
+			}
+		}
+		return allEnemyMoves;
 	}
 
 	private ArrayList trimInvalidMoves(){
@@ -203,27 +223,7 @@ public class EnemyAiV3 : MonoBehaviour {
 
 		ArrayList allEnemyMoves = new ArrayList ();
 
-		for (int y = 0; y < clonedEU.Count; y++) {
-			GameObject currentUnit = (GameObject)clonedEU [y];
-			int tempX = currentUnit.GetComponent<UnitScript> ().boardLocationX;
-			int tempY = currentUnit.GetComponent<UnitScript> ().boardLocationY;
-			string tempClassA = currentUnit.GetComponent<UnitScript> ().getClass ("a");
-			string tempClassB = currentUnit.GetComponent<UnitScript> ().getClass ("b");
-			string enemyName = tempX.ToString () + "_" + tempY.ToString ();
-
-			enemyOS [enemyName] = new Hashtable ();
-			Hashtable enemyOSName = (Hashtable) enemyOS [enemyName];
-			enemyOSName.Add ("class", tempClassA + "/" + tempClassB);
-			//this returns all the moves available for this unit
-			ArrayList moves = (ArrayList) aimoveLUT.determineFlatMovesArray(tempX, tempY, tempClassA, tempClassB);
-			//I don't think that enemy needs to have moves unique to each unit? but why not?
-			enemyOSName.Add ("moves", moves);
-			foreach (string movementName in moves) {
-				allEnemyMoves.Add (movementName);
-			}
-
-		}
-
+		allEnemyMoves = returnAllEnemyMoves (clonedEU, enemyOS);
 
 		//finds invalid moves
 		int numberOfMoves = allEnemyMoves.Count;
