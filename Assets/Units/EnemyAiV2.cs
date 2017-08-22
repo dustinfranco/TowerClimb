@@ -13,17 +13,19 @@ public class EnemyAiV2 : MonoBehaviour {
 	public int threatScore = 10;
 
 	public static movementLUT aimoveLUT = new movementLUT(); 
-	public int plyPlus = 0;
+	public int plyPlus = 1;
 
 	public Hashtable test(bool debug){
-		Hashtable returnMove = decideMove (3);
+		Debug.Log("PLY PLUS " + plyPlus.ToString());
+		Hashtable returnMove = decideMove (plyPlus);
 		return returnMove;
 
 	}
 
 	//could be changed to a hashtable later?
-	public Hashtable decideMove(int initialPlyNumber){
+	public Hashtable decideMove(int initialPlyNumber = 3){
 		board initialField = flattenedInitialField (initialPlyNumber);
+		Debug.Log ("ply Number : " + initialPlyNumber.ToString ());
 
 		//start here
 		//object b = t["key"];
@@ -45,7 +47,7 @@ public class EnemyAiV2 : MonoBehaviour {
 					//Debug.Log ("String");
 				} else {
 					board currentMoveBoard = ((board)movesHash [moveKey]);
-					if (currentMoveBoard.PScore > (int)returnMove["score"]) {
+					if (currentMoveBoard.EScore > (int)returnMove["score"]) {
 						returnMove["score"] = (int)currentMoveBoard.PScore;
 						returnMove ["move"] = (string)currentMoveBoard.sequence;
 					}
@@ -70,7 +72,7 @@ public class EnemyAiV2 : MonoBehaviour {
 		public string xys = "";
 		public bool playerOwned = true;
 		public string classA = "nothing";
-		public string classB = "nothin1g";
+		public string classB = "nothing";
 		public Hashtable moves = new Hashtable ();
 
 		public unit(int inX, int inY, bool inTeam, string inClassA, string inClassB) {
@@ -130,6 +132,8 @@ public class EnemyAiV2 : MonoBehaviour {
 		public int Circumference = 0;
 		private static int defendScore = 1;
 		private static int attackScore = 1000;
+		private int playerUnitExistanceScore = -1000000;
+		private int enemyUnitExistanceScore = 100;
 		public Hashtable OS = new Hashtable();
 		public string sequence = "";
 
@@ -239,6 +243,12 @@ public class EnemyAiV2 : MonoBehaviour {
 			foreach (string unitKey in OS.Keys) {
 				unit currentUnit = (unit) OS[unitKey];
 				//for each move in unit
+				if (currentUnit.playerOwned) {
+					EScore += playerUnitExistanceScore;
+				} else {
+					EScore += enemyUnitExistanceScore;
+				}
+
 				foreach (string moveKey in currentUnit.moves.Keys) {
 					//move is to a location with a unit
 					if(OS.ContainsKey(moveKey)){

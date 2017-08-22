@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class cameraScript : MonoBehaviour {
+	public Vector3 offsetRotationVector = new Vector3(0f,0f,-90f);
 	private float currentHeight = 0f;
 	private float nextHeight = 0f;
 	private float currentRotation = 0f;
@@ -63,12 +64,12 @@ public class cameraScript : MonoBehaviour {
 			} else {
 				if (lerpTime < 1.0f) {
 					lerpTime += lerpIteration;
-					transform.RotateAround(Vector3.zero, Vector3.up, (float)lerpIteration * (nextRotation -90f-currentRotation));
+					transform.RotateAround(Vector3.zero, Vector3.up - new Vector3(0f,-20, 0f), (float)lerpIteration * (nextRotation -90f-currentRotation));
 					transform.position = new Vector3(transform.position.x, Mathf.Lerp (currentHeight, nextHeight, lerpTime), transform.position.z);
 				} else {
 					spookyGhost.position = veryFirstPosition;
 					spookyGhost.rotation = veryFirstRotation;
-					spookyGhost.RotateAround(Vector3.zero, Vector3.up, currentlySelectedTransform.rotation.eulerAngles.y - 90f);
+					spookyGhost.RotateAround(Vector3.zero + new Vector3(offsetRotationVector.x,0f,0f) , Vector3.up + new Vector3(0,offsetRotationVector.y,0), currentlySelectedTransform.rotation.eulerAngles.y + offsetRotationVector.z);
 					transform.rotation = spookyGhost.rotation;
 					transform.position = spookyGhost.position;
 					transform.position = new Vector3 (transform.position.x, selectedUnitHeight, transform.position.z);

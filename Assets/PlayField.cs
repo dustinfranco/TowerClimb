@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 
 public class PlayField : MonoBehaviour {
+	public int plyNumber = 3;
 	public GameObject tile;
 	public GameObject unit;
 	public GameObject unitB;
@@ -184,10 +185,12 @@ public class PlayField : MonoBehaviour {
 	}
 
 	private void takeEnemyTurn(){
-		Hashtable moveDecision = (Hashtable) GetComponent<EnemyAiV2> ().decideMove (3);
+		string moveDecision = (string) GetComponent<EnemyAiV3> ().decideMove ();
 		//GameObject currentTile = activeTiles [(int)currentMovement.x, (int)currentMovement.y];
-		printHashTable(moveDecision);
-		makeMove ((string) moveDecision["move"]);
+		Debug.Log("MOVE DECIDED: " + moveDecision);
+		if (moveDecision != "") {
+			makeMove (moveDecision);
+		}
 	}
 
 	private void makeMove (string movementIn){
@@ -198,9 +201,6 @@ public class PlayField : MonoBehaviour {
 		string[] unitLocStringArray = Regex.Split (splitArray [0], "_");
 		string[] movementLocStringArray = Regex.Split (splitArray [1], "_");
 
-		//TODO: DELETE THIS WHEN YOU FIX ENEMYAI ~
-		int indexA = movementLocStringArray [1].IndexOf('~');
-		movementLocStringArray [1] = movementLocStringArray [1].Remove (indexA);
 
 
 		//Debug.Log ("LOGGING SPLIT STRINGS!");
@@ -332,7 +332,7 @@ public class PlayField : MonoBehaviour {
 			currentlySelectedUnit.GetComponent<UnitScript> ().setNewTransform (nextTileTransform);
 		} else if (Input.GetKey ("e")) {
 			if (!frameFreeze) {
-				ArrayList churrentlySelectedMovements = currentlySelectedUnit.GetComponent<UnitScript> ().returnValidMovements ();
+				ArrayList currentlySelectedMovements = currentlySelectedUnit.GetComponent<UnitScript> ().returnValidMovements ();
 				toggleMovementTiles (true);
 				frameFreeze = true;
 			}

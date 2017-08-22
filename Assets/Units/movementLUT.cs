@@ -40,6 +40,26 @@ public class movementLUT : MonoBehaviour {
 		return (Hashtable) returnMoves.Clone ();
 	}
 
+	public ArrayList determineFlatMovesArray(int x, int y, string classA, string classB){
+		ArrayList returnMoves = new ArrayList();
+		ArrayList determinedMoves = determineMoves (classA, classB);
+		for (int z = 0; z < determinedMoves.Count; z++) {
+			Vector2 currentMove = (Vector2)determinedMoves [z];
+			int newX = x + (int) currentMove.x;
+			int newY = y + (int) currentMove.y;
+			if (newY < activeHigh && newY > activeLow) {
+				if (newX >= circumference) {
+					newX = newX - circumference;
+				} else if (newX < 0) {
+					newX = newX + circumference;
+				}
+				string keyString = newX.ToString () + "_" + newY.ToString ();
+				returnMoves.Add((string) keyString.Clone());
+			}
+		}
+		return (ArrayList) returnMoves.Clone ();
+	}
+
 	public ArrayList determineMoves (string classA, string classB){
 		ArrayList returnList = new ArrayList ();
 		if (classA == "Spear" || classB == "Spear") {

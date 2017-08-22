@@ -10,14 +10,15 @@ public class EnemyAiV3 : MonoBehaviour {
 
 
 	/* Prioritize:
-		1. can take a unit next turn and is defended
-		2. can take a unit and is undefended
+		x1. can take a unit next and is defended
+		x2. can take a unit and is undefended
 		3. can take a unit next turn and is defended
 		4. can take a unit next turn but is undefended
+		
 		5. move towards enemy and is defended
 		6. move towards enemy and is undefended
 		7. random? serious lack of options at this point
-		*/
+	*/
 
 	/*
 	the board is defined by spaces that have 3 attributes:
@@ -239,9 +240,13 @@ public class EnemyAiV3 : MonoBehaviour {
 		}
 
 
+
 		Debug.Log ("UNSURE WHAT MOVE TO MAKE, making a random move");
 		return "";
 	}
+
+
+
 
 	//this is "does input threaten the input OS
 	//inputMove is like "A_B", input class is the class, inputDefensiveOS is the opposite team of the input move
